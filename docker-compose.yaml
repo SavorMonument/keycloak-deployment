@@ -1,0 +1,25 @@
+services:
+  keycloak:
+    image: keycloak
+    ports:
+      - "8080:80"
+    depends_on:
+      - keycloak-db
+    environment:
+      - DATABASE_URL=postgres://postgres:nzT02mptLeUpjLD9AHoPU81jO@keycloak-db:5432/webapp?sslmode=disable
+      - DATABASE_DSN="host=skymates-db-1 user=postgres password=password dbname=webapp port=5432 sslmode=disable"
+    volumes:
+      - ./ui:/app/ui
+  keycloak-db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nzT02mptLeUpjLD9AHoPU81jO
+      POSTGRES_DB: webapp
+    ports: 
+      - "5432:5432"
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+      - /etc/passwd:/etc/passwd:ro
+      # - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    command: ["postgres", "-c", "fsync=off"]
